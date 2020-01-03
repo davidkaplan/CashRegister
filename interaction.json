@@ -1,0 +1,75 @@
+{
+	"0" :
+	{
+		"displaytext" : "Go Fuck Yourself",
+		"soundfile" : "moan1.wav",
+		"receipttext" : ""
+	},
+	"1" :
+	{
+		"displaytext" : "Give Us Money",
+		"soundfile" : "fart.wav",
+		"receipttext" : ""
+	},
+	"2" :
+	{
+		"displaytext" : "What Do You Want?",
+		"soundfile" : "iloveyou.wav",
+		"receipttext" : ""
+	},
+	"5" :
+	{
+		"displaytext" : "Pay Up Bitch!",
+		"soundfile" : "ohyeah.wav",
+		"receipttext" : ""
+	},
+	"6" :
+	{
+		"displaytext" : "Who's yer daddy?",
+		"soundfile" : "kiss.wav",
+		"receipttext" : ""
+	},
+	"7" :
+	{
+		"displaytext" : "Hi I'm Cassie :)",
+		"soundfile" : "hello.wav",
+		"receipttext" : ""
+	},
+	"11" :
+	{
+		"displaytext" : "Werk it baby",
+		"soundfile" : "woman2.wav",
+		"receipttext" : ""
+	},
+	"12" :
+	{
+		"displaytext" : "Oooooweeee",
+		"soundfile" : "beep.wav",
+		"receipttext" : ""
+	},
+	"13" :
+	{
+		"displaytext" : "Say It Again",
+		"soundfile" : "woman1.wav",
+		"receipttext" : ""
+	},
+	"17" :
+	{
+		"displaytext" : "I Love You",
+		"soundfile" : "woman3.wav",
+		"receipttext" : ""
+	},
+	"18" :
+	{
+		"displaytext" : "I Hate You",
+		"soundfile" : "woman4.wav",
+		"receipttext" : ""
+	},
+	"19" :
+	{
+		"displaytext" : "Pull My Finger",
+		"soundfile" : "squeak2.wav",
+		"receipttext" : ""
+	}
+}
+	
