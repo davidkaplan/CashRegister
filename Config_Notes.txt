@@ -1,0 +1,31 @@
+Config Notes
+
+sudo raspi-config
+sudo apt-get update
+sudo apt-get upgrade
+
+sudo apt-get install realvnc-vnc-server
+vncserver -geometry 1900x1280
+
+sudo apt-get install python-serial
+
+dtoverlay=pi3-disable-bt
+
+sudo systemctl disable hciuart.service
+sudo systemctl disable bluealsa.service
+sudo systemctl disable bluetooth.service
+
+sudo reboot
+
+sudo pip install RPLCD
+sudo apt-get install python-smbus
+
+maybe:
+sudo apt-get install pigpio python-pigpio python3-pigpio
+
+sudo i2cdetect 1
+
+sudo pip3 install RPI.GPIO
+sudo pip3 install adafruit-blinka
+sudo pip3 install adafruit-circuitpython-thermal_printer
+
