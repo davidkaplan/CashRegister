@@ -146,11 +146,25 @@ def some_items():
 	format_text()
 	printer.feed(2)
 	
+def footer():
+	printer.justify = adafruit_thermal_printer.JUSTIFY_CENTER
+	printer.size = adafruit_thermal_printer.SIZE_SMALL
+	printer.bold = True
+	printer.print('All sales final, no returns.')
+	printer.bold = False
+	printer.feed(1)
+	printer.size = adafruit_thermal_printer.SIZE_MEDIUM
+	printer.print('Thanks for shopping with us!')
+	printer.print('Come again soon!')
+	printer.print_barcode('948372401763', printer.UPC_A)
+	printer.feed(5)
 
 	
 if __name__ == '__main__':
 	header()
 	some_items()
+	footer()
+	
 
 	
 
