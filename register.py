@@ -1,16 +1,17 @@
-#!/user/bin/env python
+#!/user/bin/env python3
 
 import serial
 #import RPi.GPIO as GPIO
 import time
 import json
+import sys
 
 import display
 import audio
 
-_BAUDRATE = 9600
+print('Python Version: ', sys.version)
 
-audio.init_audio()
+_BAUDRATE = 9600
 		
 class ArduinoComm:
 	def __init__(self, baudrate= 115200, address='/dev/ttyUSB0'):
@@ -24,6 +25,7 @@ class ArduinoComm:
 		self.s.setDTR(True)
 		
 	def read(self):
+		# returns type bytes
 		return self.s.readline().strip()
 		
 	def close(self):
@@ -35,34 +37,34 @@ class Register:
 		self.keypad = ArduinoComm(_BAUDRATE)
 		self.lcd1 = display.display()
 		self.data = {}
+		print('Starting Register')
 		
 	def load_config(self, filename):
 		with open(filename) as json_file:
 			self.data = json.load(json_file)
+		print('Loaded ', len(self.data.keys()), ' interactions')
 
 	def loop(self):
 		try:
 			while True:
 				keypress = self.keypad.read()
 				try:
-					int(keypress)
+					keypress = int(keypress)
 				except ValueError:
-					print("Error, skipping value:")
-					print(keypress)
+					print("Error, skipping serial data: ", keypress)
 					continue
-				print('Key: ' + str(keypress))
-				
+
 				try:
-					toprint = self.data[keypress]['displaytext']
+					toprint = self.data[str(keypress)]['displaytext']
 					self.lcd1.display(toprint)
-					audio.play(self.data[keypress]['soundfile'])
-				except KeyError:
-					pass
+					audio.play(self.data[str(keypress)]['soundfile'])
+				except KeyError as err:
+					print('Error, no key in dict: ', err)
 					
 		except KeyboardInterrupt:
 			self.keypad.close()
 
 if __name__ == '__main__':
 	r = Register()
-	r.load_config('interaction.json')
+	r.load_config('./interaction.json')
 	r.loop()

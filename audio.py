@@ -1,4 +1,4 @@
-#!/user/bin/env python
+#!/user/bin/env python3
 
 import os
 import pygame
@@ -14,3 +14,6 @@ def play(soundfile):
 	soundfile = 'audio/' + soundfile
 	pygame.mixer.music.load(soundfile)
 	pygame.mixer.music.play()
+	print('playing audio', soundfile)
+
+init_audio()

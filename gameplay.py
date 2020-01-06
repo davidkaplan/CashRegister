@@ -70,12 +70,12 @@ class gameplay:
 			display_front(c)
 			display_back(c)
 			play_sound(c)
-			cart.append(c)
-			print cart
 			if c == FINISH_BUTTON:
 				self.finish(cart)
 				self.mode = game_mode.ambient
 				return
+			cart.append(c)
+			print cart
 			if len(cart) > GAMEPLAY_MAX_BUTTONS:
 				cont = False
 				display_front('I\'m tired')
