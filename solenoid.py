@@ -10,7 +10,7 @@ GPIO.setup(solenoid_pin, GPIO.OUT)
 
 GPIO.output(solenoid_pin, GPIO.HIGH)
 
-time.sleep(2)
+time.sleep(0.1)
 
 GPIO.output(solenoid_pin, GPIO.LOW)
 
