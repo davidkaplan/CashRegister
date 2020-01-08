@@ -5,15 +5,14 @@ import audio
 import data
 
 class gameplay_config:
-	AMBIENT_MAX_BUTTONS = 5
+	AMBIENT_MAX_BUTTONS = 3
 	TRANSACTION_MAX_BUTTONS = 4
 	START_BUTTON = 3
 	FINISH_BUTTON = 4
 	EXIT_BUTTON = 'q'
 	RECEIPT_COUNT_FILE = 'count.txt'
 	NUMPAD_BUTTONS = [0, 1, 2, 5, 6, 7, 11, 12, 13, 17, 18, 19]
-	INACTIVITY_WARNING_TIME = 30
-	INACTIVITY_TIMEOUT_TIME = 60
+	INACTIVITY_WARNING_TIME = 10
 	OVERLOAD_SLEEP_TIME = 10
 
 class game_mode:
@@ -130,8 +129,10 @@ class ambient(_interface):
 class InactivityException(Exception):
 	pass
 	
-def handleInactivity(signum, frame):
-	raise InactivityException
+def handle_inactivity(signum, frame):
+	raise InactivityException()
+
+signal.signal(signal.SIGALRM, handle_inactivity)
 
 class transaction(_interface):
 	def __init__(self, display_front_func, display_back_func, play_sound_func, get_input_func, print_receipt_func, open_drawer_func):
@@ -229,13 +230,26 @@ class transaction(_interface):
 		#key_count = 0
 		start_time = time.time()
 		shopping_cart = []
-		inactivity_warning_issued = False
+		inactivity_warning_count = 0
 		while True:
-			key = self.get_input()
-			current_time = time.time()
+			signal.alarm(gameplay_config.INACTIVITY_WARNING_TIME)
+			try:
+				key = self.get_input()
+				inactivity_warning_count = 0
+			except InactivityException:
+				print('timeout')
+				print(time.time() - start_time)
+				if inactivity_warning_count >= 2:
+					self.inactivity_timeout()
+					return game_mode.ambient
+				self.inactivity_warning()
+				inactivity_warning_count += 1
+				continue
+			finally:
+				signal.alarm(0)
 			
 			if self.overload_timeout:
-				if (current_time - self.overload_start_time) < gameplay_config.OVERLOAD_SLEEP_TIME:
+				if (time.time() - self.overload_start_time) < gameplay_config.OVERLOAD_SLEEP_TIME:
 					time.sleep(0.1)
 					continue
 				else:
