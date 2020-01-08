@@ -135,6 +135,9 @@ class transaction(_interface):
 	def empty_checkout(self):
 		pass
 
+	def repeat_selection(self):
+		pass
+
 	def loop(self):
 		#cont = True
 		#key_count = 0
@@ -175,9 +178,12 @@ class transaction(_interface):
 			if key in gameplay_config.NUMPAD_BUTTONS:
 				self.numpad_button(key)
 			else:
-				self.item_button(key)
-				shopping_cart.append(key)
-				print(shopping_cart)
+				if key in shopping_cart:
+					self.repeat_selection()
+				else:
+					self.item_button(key)
+					shopping_cart.append(key)
+					print(shopping_cart)
 
 
 ######################################################################################
