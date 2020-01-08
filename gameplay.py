@@ -1,5 +1,8 @@
 import sys, termios, tty, os, time
 
+import register
+import audio
+
 class gameplay_config:
 	AMBIENT_MAX_BUTTONS = 5
 	TRANSACTION_MAX_BUTTONS = 4
@@ -190,9 +193,12 @@ class transaction(_interface):
 
 
 class gameplay:
-	def __init__(self):
+	def __init__(self, display_front_func, display_back_func, play_sound_func, get_input_func, print_receipt_func):
 		self.mode = game_mode.ambient
 		self.receipt_count_file = os.path.join(os.path.realpath('.'), gameplay_config.RECEIPT_COUNT_FILE)
+		self.ambient = ambient(display_front_func, display_back_func, play_sound_func, get_input_func)
+		self.transaction = transaction(display_front_func, display_back_func, play_sound_func, get_input_func)
+		self.print_receipt = print_receipt_func
 
 	def get_and_increment_count(self, reset=False):
 		try:
@@ -209,61 +215,52 @@ class gameplay:
 		    with open(self.receipt_count_file,'w') as fh:
 		    	fh.write('0')
 		return count
-
-	def play_sound(self, soundfile):
-		print('Play sound ' + soundfile)
-
-	def display_front(self, text):
-		print('Display front: ' + text)
-
-	def display_back(self, text):
-		print('Display back: ' + text)
-
-	def read_input_buffer(self):
-		return None
+		
+	def loop(self):
+		try:
+			while True:
+				if self.mode == game_mode.quit:
+					break
+				if self.mode == game_mode.ambient:
+					self.ambient.loop()
+				if self.mode == game_mode.transaction:
+					self.transaction.loop()
+		except KeyboardInterrupt:
+			pass
 
 
 ######################################################################################
 
 	
-class finish:
-	def __init__(self, display_front_func, display_back_func, play_sound_func, get_input_func):
-		super().__init__(display_front_func, display_back_func, play_sound_func, get_input_func)
-
-
-	def finish(self, cart):
-		print('printing receipt for items:')
-		print(cart)
-		# wait
-
-
-	def main(self):
-		while True:
-			if self.mode == game_mode.quit:
-				break
-			if self.mode == game_mode.ambient:
-				self.loop_ambient()
-			if self.mode == game_mode.transaction:
-				self.loop_transaction()
-
+def get_input():
+	fd = sys.stdin.fileno()
+	old_settings = termios.tcgetattr(fd)
+	try:
+		tty.setraw(sys.stdin.fileno())
+		ch = sys.stdin.read(1)
+ 
+	finally:
+		termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+	try:
+		ch = int(ch)
+	except ValueError:
+		pass
+	return ch
+	
+def main():
+	register = register()
+	game = gameplay(register.display_front, register.display_back, audio.play, register.read_keypad, register.print_receipt)
+	
+	#display_front_func, display_back_func, play_sound_func, get_input_func
+	#game.display_front = register.display_front
+	#game.display_back = register.display_back
+	#game.play_sound = audio.play
+	#game.read_input_buffer = register.read_keypad
+	
 
 if __name__ == '__main__':
-
-	def get_input():
-	    fd = sys.stdin.fileno()
-	    old_settings = termios.tcgetattr(fd)
-	    try:
-	        tty.setraw(sys.stdin.fileno())
-	        ch = sys.stdin.read(1)
-	 
-	    finally:
-	        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-	    try:
-	    	ch = int(ch)
-	    except ValueError:
-	    	pass
-	    return ch
-
+	r = register()
+	
 	game = gameplay()
 	game.read_input_buffer = get_input
 	#game.main()

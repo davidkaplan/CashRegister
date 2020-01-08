@@ -3,16 +3,33 @@
 import time
 import RPi.GPIO as GPIO
 
-solenoid_pin = 21
+_PIN = 21
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(solenoid_pin, GPIO.OUT)
+class solenoid:
+	def __init__(self):
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(_PIN, GPIO.OUT)
+		GPIO.output(_PIN, GPIO.LOW)
+		
+	def open(self):
+		GPIO.output(_PIN, GPIO.HIGH)
+		time.sleep(0.1)
+		GPIO.output(_PIN, GPIO.LOW)
 
-GPIO.output(solenoid_pin, GPIO.HIGH)
-
-time.sleep(0.1)
-
-GPIO.output(solenoid_pin, GPIO.LOW)
-
-GPIO.cleanup()
+	def test(self):
+		try:
+			while True:
+				GPIO.output(_PIN, GPIO.HIGH)
+				time.sleep(0.1)
+				GPIO.output(_PIN, GPIO.LOW)
+				time.sleep(5)			
+		except KeyboardInterrupt:
+			pass
+			
+	def __del__(self):
+		GPIO.cleanup()
+	
+if __name__ == '__main__':
+	s = solenoid()
+	s.open()
 
