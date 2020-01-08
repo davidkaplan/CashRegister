@@ -1,30 +1,11 @@
 import sys, termios, tty
 
-EXIT_CHAR = 'e'
-AMBIENT_MAX_BUTTONS = 5
-GAMEPLAY_MAX_BUTTONS = 4
-START_BUTTON = 's'
-FINISH_BUTTON = 'f'
-
-def get_input():
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(sys.stdin.fileno())
-        ch = sys.stdin.read(1)
- 
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
-
-def play_sound(soundfile):
-	print 'play sound ' + soundfile
-
-def display_front(text):
-	print 'display front ' + text
-
-def display_back(text):
-	print 'display back ' + text
+class gameplay_config:
+	AMBIENT_MAX_BUTTONS = 5
+	GAMEPLAY_MAX_BUTTONS = 4
+	START_BUTTON = 3
+	FINISH_BUTTON = 4
+	EXIT_BUTTON = 'q'
 
 class game_mode:
 	ambient = 0
@@ -36,25 +17,37 @@ class gameplay:
 	def __init__(self):
 		self.mode = game_mode.ambient
 
+	def play_sound(self, soundfile):
+		print('Play sound ' + soundfile)
+
+	def display_front(self, text):
+		print('Display front: ' + text)
+
+	def display_back(self, text):
+		print('Display back: ' + text)
+
+	def read_input_buffer(self):
+		return None
+
 	def loop_ambient(self):
 		cont = True
 		key_count = 0
-		display_front('Hi I\'m Cassie')
-		display_back('Press My Buttons')
+		self.display_front('Hi I\'m Cassie')
+		self.display_back('Press My Buttons')
 		while cont:
-			c = get_input()
-			if c == EXIT_CHAR:
+			c = self.read_input_buffer()
+			if c == gameplay_config.EXIT_BUTTON:
 				return 'break'
-			print c
-			play_sound(c)
+			print(c)
+			self.play_sound(str(c))
 			key_count += 1
-			print key_count
-			if c == START_BUTTON:
+			print(key_count)
+			if c == gameplay_config.START_BUTTON:
 				self.mode = game_mode.gameplay
 				return
-			if key_count >= AMBIENT_MAX_BUTTONS:
+			if key_count >= gameplay_config.AMBIENT_MAX_BUTTONS:
 				cont = False
-				play_sound('press my start button to begin!')
+				self.play_sound('press my start button to begin!')
 				key_count = 0
 				continue
 
@@ -63,24 +56,24 @@ class gameplay:
 		key_count = 0
 		cart = []
 		while cont:
-			c = get_input()
-			if c == EXIT_CHAR:
+			c = self.read_input_buffer()
+			if c ==gameplay_config.EXIT_BUTTON:
 				return 'break'
-			print c
-			display_front(c)
-			display_back(c)
-			play_sound(c)
-			if c == FINISH_BUTTON:
+			print(c)
+			self.display_front(str(c))
+			self.display_back(str(c))
+			self.play_sound(str(c))
+			if c == gameplay_config.FINISH_BUTTON:
 				self.finish(cart)
 				self.mode = game_mode.ambient
 				return
 			cart.append(c)
-			print cart
-			if len(cart) > GAMEPLAY_MAX_BUTTONS:
+			print(cart)
+			if len(cart) > gameplay_config.GAMEPLAY_MAX_BUTTONS:
 				cont = False
-				display_front('I\'m tired')
-				display_back('I\'m tired')
-				play_sound('I\'m tired')
+				self.display_front('I\'m tired')
+				self.display_back('I\'m tired')
+				self.play_sound('I\'m tired')
 				# Wait
 				self.mode = game_mode.ambient
 				return	
@@ -104,7 +97,24 @@ class gameplay:
 
 
 if __name__ == '__main__':
+
+	def get_input():
+	    fd = sys.stdin.fileno()
+	    old_settings = termios.tcgetattr(fd)
+	    try:
+	        tty.setraw(sys.stdin.fileno())
+	        ch = sys.stdin.read(1)
+	 
+	    finally:
+	        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+	    try:
+	    	ch = int(ch)
+	    except ValueError:
+	    	pass
+	    return ch
+
 	game = gameplay()
+	game.read_input_buffer = get_input
 	game.main()
 
 
