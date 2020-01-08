@@ -1,7 +1,8 @@
-import sys, termios, tty, os, time
+import sys, termios, tty, os, time, random
+from itertools import cycle
 
-import register
 import audio
+import data
 
 class gameplay_config:
 	AMBIENT_MAX_BUTTONS = 5
@@ -21,16 +22,6 @@ class game_mode:
 	quit = 3
 
 
-ambient_data = {
-	'waiting_mode_text': [
-		{
-			'front': '''Hi, I\'m Cassie
-(✿◠‿◠) ''',
-			'back': '''...the friendly
-cash register!'''
-		}
-	]
-}
 
 ######################################################################################
 
@@ -40,6 +31,7 @@ class _interface(object):
 		self.display_back = display_back_func
 		self.play_sound = play_sound_func
 		self.get_input = get_input_func
+		self.cycle_waiting_messages = cycle(range(len(data.ambient_waiting_disp)))
 
 	def display_both(self, text):
 		self.display_front(text)
@@ -54,26 +46,31 @@ class ambient(_interface):
 
 	def display_waiting(self):
 		'''Cycles messages'''
-		#txt1 = 'Hi I\'m Cassie'
-		#txt2 = 'Press My Buttons'
-		self.display_front(ambient_data['waiting_mode_text'][0]['front'])
-		self.display_back(ambient_data['waiting_mode_text'][0]['back'])
+		self.display_both(data.ambient_waiting_disp[next(self.cycle_waiting_messages)])
+
+	def prompt(self):
+		self.display_waiting()
+		audio_dir = os.path.join('audio', data.ambient_audio_dir_prompts)
+		track = os.path.join(audio_dir, random.choice(os.listdir(audio_dir)))
+		self.play_sound(track)
 
 	def standard_button(self, key):
 		self.display_waiting()
-		self.play_sound('ambient standard' + str(key))
+		audio_dir = os.path.join('audio', data.ambient_audio_dir_buttons)
+		track = os.path.join(audio_dir, random.choice(os.listdir(audio_dir)))
+		self.play_sound(track)
 
 	def start_button(self):
 		txt = 'start button'
 		self.display_front(txt)
 		self.display_back(txt)
-		self.play_sound(txt)
+		#self.play_sound(txt)
 
 	def finish_button(self):
 		txt = 'finish button'
 		self.display_front(txt)
 		self.display_back(txt)
-		self.play_sound(txt)
+		#self.play_sound(txt)
 
 	def loop(self):
 		#cont = True
@@ -90,16 +87,12 @@ class ambient(_interface):
 				return game_mode.transaction
 
 			if key == gameplay_config.FINISH_BUTTON:
-				self.finish_button()
+				self.finish_button
+
+			if key_count > gameplay_config.AMBIENT_MAX_BUTTONS:
+				self.prompt()
 				key_count = 0
 
-			# TODO: Remove max buttons?
-			if key_count > gameplay_config.AMBIENT_MAX_BUTTONS:
-				# DO SOMETHING
-				self.display_waiting()
-				# sound
-				key_count = 0
-			
 			# Else assume standard button
 			#print(c)
 			self.standard_button(key)
@@ -136,10 +129,10 @@ class transaction(_interface):
 		pass
 
 	def empty_checkout(self):
-		pass
+		print('empty')
 
 	def repeat_selection(self):
-		pass
+		print('repeat')
 
 	def loop(self):
 		#cont = True
@@ -222,49 +215,14 @@ class gameplay:
 				if self.mode == game_mode.quit:
 					break
 				if self.mode == game_mode.ambient:
-					self.ambient.loop()
+					self.mode = self.ambient.loop()
 				if self.mode == game_mode.transaction:
-					self.transaction.loop()
+					self.mode = self.transaction.loop()
 		except KeyboardInterrupt:
 			pass
 
 
-######################################################################################
 
-	
-def get_input():
-	fd = sys.stdin.fileno()
-	old_settings = termios.tcgetattr(fd)
-	try:
-		tty.setraw(sys.stdin.fileno())
-		ch = sys.stdin.read(1)
- 
-	finally:
-		termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-	try:
-		ch = int(ch)
-	except ValueError:
-		pass
-	return ch
-	
-def main():
-	register = register()
-	game = gameplay(register.display_front, register.display_back, audio.play, register.read_keypad, register.print_receipt)
-	
-	#display_front_func, display_back_func, play_sound_func, get_input_func
-	#game.display_front = register.display_front
-	#game.display_back = register.display_back
-	#game.play_sound = audio.play
-	#game.read_input_buffer = register.read_keypad
-	
-
-if __name__ == '__main__':
-	r = register()
-	
-	game = gameplay()
-	game.read_input_buffer = get_input
-	#game.main()
-	#d = os.path.dirname(__file__)
 
 	
 
