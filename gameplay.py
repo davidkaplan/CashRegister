@@ -14,7 +14,7 @@ class gameplay_config:
 	NUMPAD_BUTTONS = [0, 1, 2, 5, 6, 7, 11, 12, 13, 17, 18, 19]
 	INACTIVITY_WARNING_TIME = 30
 	INACTIVITY_TIMEOUT_TIME = 60
-	OVERLOAD_SLEEP_TIME = 15
+	OVERLOAD_SLEEP_TIME = 30
 
 class game_mode:
 	ambient = 0
@@ -22,7 +22,24 @@ class game_mode:
 	finish = 2
 	quit = 3
 
-
+def get_and_increment_count(reset=False):
+	receipt_count_file = os.path.join(os.path.realpath('.'), gameplay_config.RECEIPT_COUNT_FILE)
+	try:
+		with open(receipt_count_file,'r+') as fh:
+			count = fh.read()
+			#print('read count', count)
+			count = int(count)+1
+			fh.seek(0)
+			#print('write count', str(count))
+			if reset:
+				count = 0
+			fh.write(str(count))
+	except FileNotFoundError:
+		count = 0
+		with open(receipt_count_file,'w') as fh:
+			fh.write('0')
+	return count
+	
 
 ######################################################################################
 
@@ -75,7 +92,7 @@ class ambient(_interface):
 
 	def start_button(self):
 		self.display_waiting()
-		#self._play_random_audio(data.start_transaction_audio)
+		self._play_random_audio(data.start_transaction_audio)
 
 	def finish_button(self):
 		self.display_both(next(self.ambient_checkout_messages))
@@ -120,6 +137,14 @@ class transaction(_interface):
 		self.overload_start_time = time.time()
 		self.warning_timer = False
 		self.warning_start_time = time.time()
+		self.begin_messages = cycle(data.transaction_begin_disp)
+		self.repeat_messages = cycle(data.transaction_repeat_err_disp)
+		self.empty_messages = cycle(data.transaction_empty_checkout_disp)
+		self.inactivity_warn_messages = cycle(data.transaction_inactive_warn_disp)
+		self.timeout_messages = cycle(data.transaction_timeout_disp)
+		self.calculating_messages = cycle(data.checkout_calculating_disp)
+		self.drawer_messages = cycle(data.checkout_drawer_disp)
+		self.receipt_messages = cycle(data.checkout_receipt_disp)
 
 	def numpad_button(self, key):
 		self._play_random_audio(data.ambient_audio_dir_buttons)
@@ -127,6 +152,8 @@ class transaction(_interface):
 
 	def item_button(self, key, num):
 		print('transaction item button')
+		txt = data.items[str(key)]['display']
+		self.display_both(txt)
 		if num == 1:
 			self._play_audio_sequence([data.transaction_1_sfx, data.transaction_1_phrase])
 		if num == 2:
@@ -138,19 +165,34 @@ class transaction(_interface):
 
 
 	def start_button(self):
+		self.display_both(next(self.begin_messages))
 		self._play_audio_sequence([data.transaction_empty_checkout_sfx, data.transaction_empty_checkout_phrase])
 		print('transaction start button')
 
-	def finish_button(self):
+	def finish_button(self, items):
+		self.display_both(next(self.calculating_messages))
 		self._play_audio_sequence([data.checkout_1, data.checkout_2, data.checkout_3, data.checkout_4])
 		# wait for sound to finish before opening drawer
 		while audio.is_busy():
 			time.sleep(0.1)
+		self.display_both(next(self.drawer_messages))
 		self.open_drawer()
 		self._play_audio_sequence([data.checkout_drawer_out_sfx, data.checkout_drawer_out_phrase, data.checkout_finale])
-	
-		# print receipt
+		
+		self.display_both(next(self.receipt_messages))
 		self._play_audio_sequence([data.checkout_farewell, data.transaction_outro_song], wait_to_start=True)
+		
+		# print receipt
+		count = get_and_increment_count()
+		fortune = data.fortunes[len(items)-1]
+		items_descs = []
+		for item in items:
+			name = data.items[str(item)]['name']
+			txt = data.items[str(item)]['copy']
+			items_descs.append([name, txt])
+		self.print_receipt(fortune, items_descs, count) 
+		
+		
 		print('transaction finish button')
 
 	def overloaded(self):
@@ -160,16 +202,20 @@ class transaction(_interface):
 		print('overload')
 
 	def inactivity_warning(self):
+		self.display_both(next(self.inactivity_warn_messages))
 		self._play_audio_sequence([data.transaction_inactivity_warning_sfx, data.transaction_inactivity_warning_phrase])
 
 	def inactivity_timeout(self):
+		self.display_both(next(self.timeout_messages))
 		self._play_audio_sequence([data.transaction_timeout_sfx, data.transaction_timeout_phrase])
 
 	def empty_checkout(self):
+		self.display_both(next(self.empty_messages))
 		self._play_audio_sequence([data.transaction_empty_checkout_sfx, data.transaction_empty_checkout_phrase])
 		print('empty')
 
 	def repeat_selection(self):
+		self.display_both(next(self.repeat_messages))
 		self._play_audio_sequence([data.transaction_repeat_sfx, data.transaction_repeat_phrase])
 		print('repeat')
 
@@ -180,8 +226,8 @@ class transaction(_interface):
 		shopping_cart = []
 		inactivity_warning_issued = False
 		while True:
-			current_time = time.time()
 			key = self.get_input()
+			current_time = time.time()
 			
 			if self.overload_timeout:
 				if (current_time - self.overload_start_time) < gameplay_config.OVERLOAD_SLEEP_TIME:
@@ -194,30 +240,28 @@ class transaction(_interface):
 			if key == gameplay_config.EXIT_BUTTON:
 				return game_mode.quit
 
-			if not inactivity_warning_issued:
-				if (current_time - start_time) > gameplay_config.INACTIVITY_WARNING_TIME:
-					self.inactivity_warning()
-					inactivity_warning_issued = True
+			#if not inactivity_warning_issued:
+			#	if (current_time - start_time) > gameplay_config.INACTIVITY_WARNING_TIME:
+			#		self.inactivity_warning()
+			#		inactivity_warning_issued = True
 
-			if (current_time - start_time) > gameplay_config.INACTIVITY_TIMEOUT_TIME:
-				self.inactivity_timeout()
-				return game_mode.ambient
+			#if (current_time - start_time) > gameplay_config.INACTIVITY_TIMEOUT_TIME:
+			#	self.inactivity_timeout()
+			#	return game_mode.ambient
 
 			if key == gameplay_config.START_BUTTON:
 				self.start_button()
-				start_time = current_time
 				continue
 
 			if key == gameplay_config.FINISH_BUTTON:
 				if len(shopping_cart) > 0:
-					self.finish_button()
+					self.finish_button(shopping_cart)
 					return game_mode.ambient
 				else:
 					self.empty_checkout()
 				continue
 
 			if len(shopping_cart) >= gameplay_config.TRANSACTION_MAX_BUTTONS:
-				# DO SOMETHING
 				self.overloaded()
 				continue
 
@@ -226,6 +270,7 @@ class transaction(_interface):
 			else:
 				if key in shopping_cart:
 					self.repeat_selection()
+					continue
 				else:
 					shopping_cart.append(key)
 					self.item_button(key, len(shopping_cart))
@@ -238,26 +283,9 @@ class transaction(_interface):
 class gameplay:
 	def __init__(self, display_front_func, display_back_func, play_sound_func, get_input_func, print_receipt_func, open_drawer_func):
 		self.mode = game_mode.ambient
-		self.receipt_count_file = os.path.join(os.path.realpath('.'), gameplay_config.RECEIPT_COUNT_FILE)
 		self.ambient = ambient(display_front_func, display_back_func, play_sound_func, get_input_func, print_receipt_func, open_drawer_func)
 		self.transaction = transaction(display_front_func, display_back_func, play_sound_func, get_input_func, print_receipt_func, open_drawer_func)
 
-	def get_and_increment_count(self, reset=False):
-		try:
-		    with open(self.receipt_count_file,'r+') as fh:
-		    	count = fh.read()
-		    	#print('read count', count)
-		    	count = int(count)+1
-		    	fh.seek(0)
-		    	#print('write count', str(count))
-		    	if reset:
-		    		count = 0
-		    	fh.write(str(count))
-		except FileNotFoundError:
-		    with open(self.receipt_count_file,'w') as fh:
-		    	fh.write('0')
-		return count
-		
 	def loop(self):
 		try:
 			while True:
