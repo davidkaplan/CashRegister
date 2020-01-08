@@ -18,6 +18,9 @@ def print_receipt(fortune, item_desc_pairs, cust_no):
 		print(item)
 		print('Description')
 		print(desc)
+		
+def open_drawer():
+	print('open drawer')
 
 def get_input():
     fd = sys.stdin.fileno()
@@ -36,7 +39,7 @@ def get_input():
 
 def test_count():
 	sequence = [0, 1, 2, 5, 6, 7, 11, 12, 13, 'q']
-	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt)
+	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	assert(game.get_and_increment_count(reset=True) == 0)
 	assert(game.get_and_increment_count() == 1)
 	assert(game.get_and_increment_count() == 2)
@@ -48,18 +51,23 @@ def test_count():
 def test_ambient():
 	print('test ambient display:')
 	sequence = [0, 1, 2, 5, 6, 7, 11, 12, 13, 'q']
-	amb = ambient(disp_front, disp_back, play_sound, iter(sequence).__next__)
+	amb = ambient(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	amb.display_waiting()
 	amb.standard_button('standard button')
 	amb.start_button()
 	amb.finish_button()
 	amb.loop()
+	
+def test_ambient_checkout():
+	sequence = [0, 4, 'q']
+	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
+	game.loop()
 
 
 def test_transaction():
 	print('test transactions')
 	sequence = [0, 1, 2, 5, 8, 9, 10, 14, 15, 16, 'q']
-	trans = transaction(disp_front, disp_back, play_sound, iter(sequence).__next__)
+	trans = transaction(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	trans.numpad_button(1)
 	trans.item_button(1)
 	trans.start_button()
@@ -69,28 +77,29 @@ def test_transaction():
 
 def test_transaction():
 	sequence = [3, 8, 9, 4, 'q']
-	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt)
+	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	game.loop()
 
 def test_overload():
 	sequence = [3, 8, 9, 10, 14, 15, 16, 4, 'q']
-	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt)
+	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	game.loop()
 
 def test_empty():
 	sequence = [3, 4, 'q']
-	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt)
+	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	game.loop()
 
 def test_repeat():
 	sequence = [3, 8, 8, 4, 'q']
-	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt)
+	game = gameplay(disp_front, disp_back, play_sound, iter(sequence).__next__, print_receipt, open_drawer)
 	game.loop()
 
 
 if __name__ == '__main__':
-	test_ambient()
-	#test_transaction()
+	#test_ambient()
+	#test_ambient_checkout()
+	test_transaction()
 	#test_overload()
 	#test_empty()
 	#test_overload()

@@ -19,8 +19,21 @@ def play(soundfile):
 	#	s = pygame.mixer.Sound(soundfile)
 	#	s.play()
 	print('playing audio', soundfile)
+	
+def is_busy():
+	return pygame.mixer.music.get_busy()
 
 init_audio()
+
+if __name__ == '__main__':
+	import time
+	a = './audio/05a - Push 1 SFX/push 1 [2020-01-07 222006].wav'
+	b = './audio/05b - Push 1 Phrase/Push 1-Norm_01.wav'
+	play(a)
+	while is_busy():
+		time.sleep(0.01)
+	play(b)
+	time.sleep(5)
 
 
 

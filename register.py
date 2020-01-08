@@ -83,6 +83,6 @@ class Register:
 
 if __name__ == '__main__':
 	reg = Register()
-	game = gameplay.gameplay(reg.display_front, reg.display_back, audio.play, reg.read_keypad, reg.print_receipt)
+	game = gameplay.gameplay(reg.display_front, reg.display_back, audio.play, reg.read_keypad, reg.print_receipt, reg.open_drawer)
 	game.loop()
 
