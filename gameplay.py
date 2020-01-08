@@ -1,4 +1,4 @@
-import sys, termios, tty, os, time, random
+import sys, termios, tty, os, time, random, signal
 from itertools import cycle
 
 import audio
@@ -14,7 +14,7 @@ class gameplay_config:
 	NUMPAD_BUTTONS = [0, 1, 2, 5, 6, 7, 11, 12, 13, 17, 18, 19]
 	INACTIVITY_WARNING_TIME = 30
 	INACTIVITY_TIMEOUT_TIME = 60
-	OVERLOAD_SLEEP_TIME = 30
+	OVERLOAD_SLEEP_TIME = 10
 
 class game_mode:
 	ambient = 0
@@ -127,6 +127,11 @@ class ambient(_interface):
 
 ######################################################################################
 
+class InactivityException(Exception):
+	pass
+	
+def handleInactivity(signum, frame):
+	raise InactivityException
 
 class transaction(_interface):
 	def __init__(self, display_front_func, display_back_func, play_sound_func, get_input_func, print_receipt_func, open_drawer_func):
@@ -171,7 +176,7 @@ class transaction(_interface):
 
 	def finish_button(self, items):
 		self.display_both(next(self.calculating_messages))
-		self._play_audio_sequence([data.checkout_1, data.checkout_2, data.checkout_3, data.checkout_4])
+		self._play_audio_sequence([data.checkout_10b, data.checkout_10a, data.checkout_10c, data.checkout_10a, data.checkout_10d])
 		# wait for sound to finish before opening drawer
 		while audio.is_busy():
 			time.sleep(0.1)

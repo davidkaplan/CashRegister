@@ -14,10 +14,10 @@ transaction_4_sfx = '08a - Push 4 SFX'
 transaction_4_phrase = '08b - Push 4 Phrase'
 transaction_overload_sfx = '09a - Push 5 SFX'
 transaction_overload_phrase = '09b - Push 5 OVERLOAD RESET Phrase'
-checkout_1 = '10a - Checkout Calculation SFX'
-checkout_2 = '10b - Checkout Phrase 1'
-checkout_3 = '10c - Checkout Phrase 2'
-checkout_4 = '10d - Checkout Phrase 3'
+checkout_10a = '10a - Checkout Calculation SFX'
+checkout_10b = '10b - Checkout Phrase 1'
+checkout_10c = '10c - Checkout Phrase 2'
+checkout_10d = '10d - Checkout Phrase 3'
 checkout_drawer_out_sfx = '11a - Drawer Out Waiting'
 checkout_drawer_out_phrase = '11b - Drawer Out Phrase'
 checkout_finale = '12 - Checkout Finale'
@@ -49,97 +49,97 @@ items ={
 		'copy': '''Our hearts and minds are wired for relationships. You can't self-love yourself out of your need for others. @}->--''',
 		'display': '<////////3'
 	},
-	'25': 
+	'23': 
 	{
 		'name': 'Intimacy',
 		'copy': 'Intimacy...what a euphemism. Like, did you talk about your feelings or do anal? Both? You go!!',
 		'display': 'wtf does it mean'
 	},
-	'26': 
+	'30': 
 	{
 		'name': 'Apology',
 		'copy': 'Forgiveness is the ability to release an asshole from tearing on your heartstring every day. Have you been the asshole? Maybe you should apologize. Is one tugging on your heartstring? Try to love them and let them go.',
 		'display': 'u miss ur ex'
 	},
-	'27': 
+	'16': 
 	{
 		'name': 'Goth GF',
 		'copy': 'Goth girlfriend? That was a typo, I am moth girlfriend. Be gentle.',
 		'display': 'light of my life'
 	},
-	'28': 
+	'14': 
 	{
 		'name': 'Admiration',
 		'copy': '''Dating young people has many pro's, including them thinking you are mature and good at things bc you have basically lapped them in time you've been on this planet.''',
 		'display': 'who hurt u'
 	},
-	'29': 
+	'28': 
 	{
 		'name': 'Respect',
 		'copy': '''You def didn't just get lucky this time, you fucking earned it with your big brain energy. And I want you to know that.''',
 		'display': 'macho, h8 u'
 	},
-	'30': 
+	'10': 
 	{
 		'name': 'Security',
 		'copy': '''Splitting financial costs equally makes total sense and is the best way to show that you care about equality. Don't patronize ppl with marginalized identities by picking up more of the costs of things; it makes them feel equal and important to privledged people to pay the same even though their ability to earn (and pay for) things is less due to their identity alone!''',
 		'display': 'brb robbing u'
 	},
-	'20': 
+	'22': 
 	{
 		'name': 'Sex',
 		'copy': 'Turn yourself into a commodity for the market. *harnesses unwanted sexualization for profit* Wait, no, not like that!!',
 		'display': 'u&everyone else'
 	},
-	'21': 
+	'25': 
 	{
 		'name': 'Eye Contact',
 		'copy': '''The personal is political. If you're not interrogating your desires to only fuck white, think, cis-gendered, able-bodied people, have you really entered the wretching black hole between violent denial of others' humanity and moral authoritarianism?''',
 		'display': '''i know you're\n\ralready looking'''
 	},
-	'22': 
+	'20': 
 	{
-		'name': 'Acceptancer',
+		'name': 'Acceptance',
 		'copy': '''Imagine being one of the kids in the orphanage when flippin Stuart Little the rodent got adopted and you didn't. That's something that will fuck you up.''',
 		'display': '''aaaand that's\n\ra wound'''
 	},
-	'23': 
+	'15': 
 	{
 		'name': 'Loyalty',
 		'copy': '''Interacting with men isn't always a fun thing for women to do. But it is definitely the most likely way that any of us will ever own a home in the Bay Area. ¯\_(ツ)_/¯''',
 		'display': 'earn it maybe?'
 	},
-	'14': 
+	'8': 
 	{
 		'name': 'Inspiration',
 		'copy': '''Find your muse. Dip your pen into their heart, and write on. Or maybe don't be an objectifying art dick?''',
 		'display': 'ur idol is\n\ran asshole'
 	},
-	'15': 
+	'27': 
 	{
 		'name': 'Warmth',
 		'copy': '''Tip $10-100 (you know how much you can afford) now to someone who made you feel loved this week. Do it now, we're watching.''',
 		'display': 'lonely af\n\rlizard person'
 	},
-	'16': 
+	'21': 
 	{
 		'name': 'Connection',
 		'copy': 'Sex workers ""sell their bodies."" So do landscapers, hot tar roofers, and security guards. But once you throw genitals into the mix, everyone loses their minds! Can you explain why? Or did u just hit your shins on a bunch of taboo?',
 		'display': '((d[-_-]b))'
 	},
-	'8': 
+	'29': 
 	{
 		'name': 'Validation',
 		'copy': 'How do I write in my job description that I stopped your startup from imploding through many 1 am phone calls and your dark nights of the soul? Can I have some fucking equity?',
 		'display': 'a fucking cookie'
 	},
-	'9': 
+	'26': 
 	{
 		'name': 'Touch',
 		'copy': 'When they only paint their nails to hide the dirt under them and now you have a UTI >.<',
 		'display': '><(((*>'
 	},
-	'10': 
+	'9': 
 	{
 		'name': 'Trust',
 		'copy': '''Let's enter into a partnership where I become dependent on your material resources and you become dependent on me emotionally. Then we can break up and you can call me a gold digger. I won't call you anything, since there is no word for people who use others for their love, sex, and emotional support.''',
