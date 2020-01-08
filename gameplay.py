@@ -89,9 +89,10 @@ class ambient(_interface):
 			if key == gameplay_config.FINISH_BUTTON:
 				self.finish_button
 
-			if key_count > gameplay_config.AMBIENT_MAX_BUTTONS:
+			if key_count >= gameplay_config.AMBIENT_MAX_BUTTONS:
 				self.prompt()
 				key_count = 0
+				continue
 
 			# Else assume standard button
 			#print(c)

@@ -7,7 +7,7 @@ import json
 import sys
 
 import display
-#import audio
+import audio
 import gameplay
 import thermal_printer
 import solenoid
@@ -56,9 +56,6 @@ class Register:
 	def display_back(self, text):
 		self.lcd_back.display(text)
 		
-	#def play_sound(soundfile):
-	#	audio.play(soundfile)
-		
 	def load_config(self, filename):
 		with open(filename) as json_file:
 			self.data = json.load(json_file)
@@ -85,7 +82,7 @@ class Register:
 		self.keypad.close()
 
 if __name__ == '__main__':
-	r = Register()
-	r.open_drawer()
-	#r.load_config('./interaction.json')
-	#r.loop()
+	reg = Register()
+	game = gameplay.gameplay(reg.display_front, reg.display_back, audio.play, reg.read_keypad, reg.print_receipt)
+	game.loop()
+
