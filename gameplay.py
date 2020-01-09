@@ -177,13 +177,13 @@ class transaction(_interface):
 
 	def finish_button(self, items):
 		self.display_both(next(self.calculating_messages))
-		self._play_audio_sequence([data.checkout_10b, data.checkout_10a, data.checkout_10c, data.checkout_10a, data.checkout_10d])
+		self._play_audio_sequence([data.checkout_10b, data.checkout_10a, data.checkout_10c, data.checkout_10a])
 		# wait for sound to finish before opening drawer
 		while audio.is_busy():
 			time.sleep(0.1)
 		self.display_both(next(self.drawer_messages))
 		self.open_drawer()
-		self._play_audio_sequence([data.checkout_drawer_out_sfx, data.checkout_drawer_out_phrase, data.checkout_finale])
+		self._play_audio_sequence([data.checkout_10d, data.checkout_drawer_out_sfx, data.checkout_drawer_out_phrase, data.checkout_finale])
 		
 		self.display_both(next(self.receipt_messages))
 		self._play_audio_sequence([data.checkout_farewell, data.transaction_outro_song], wait_to_start=True)
