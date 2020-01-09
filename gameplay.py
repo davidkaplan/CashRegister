@@ -235,15 +235,17 @@ class transaction(_interface):
 			signal.alarm(gameplay_config.INACTIVITY_WARNING_TIME)
 			try:
 				key = self.get_input()
-				inactivity_warning_count = 0
+				inactivity_warning_count = 3
 			except InactivityException:
+				inactivity_warning_count += 1
+				if inactivity_warning_count < 3:
+					continue
 				print('timeout')
 				print(time.time() - start_time)
-				if inactivity_warning_count >= 2:
+				if inactivity_warning_count >= 5:
 					self.inactivity_timeout()
 					return game_mode.ambient
 				self.inactivity_warning()
-				inactivity_warning_count += 1
 				continue
 			finally:
 				signal.alarm(0)

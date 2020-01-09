@@ -28,14 +28,33 @@ class thermal_printer:
 		self.print('*'*WIDTH)
 		self.printer.feed(1)
 		
+	def print_fortune(self, text):
+		WIDTH = 32
+		lines = textwrap.wrap(text, WIDTH)
+		#self.print('*'*WIDTH)
+		#self.print('*' + ' '*(WIDTH-2) + '*')
+		self.printer.justify = adafruit_thermal_printer.JUSTIFY_LEFT
+		#self.printer.bold = True
+		for line in lines:
+			#f = ('* ' + ('{: ^' + str(WIDTH-4) + '}').format(line) + ' *')
+			f = line
+			self.print(f)
+		#self.printer.bold = False
+		#self.print('*' + ' '*(WIDTH-2) + '*')
+		#self.print('*'*WIDTH)
+		self.printer.feed(1)
+		
 	def print_item(self, item_name):
 		self.printer.print('{:.<16}{:.>16}'.format(item_name, 'QT 1'))
 		self.printer.feed(1)
 		
 	def print_header(self, customer_number=0):
 		self.printer.feed(5)
-		self.printer.size = adafruit_thermal_printer.SIZE_LARGE
+		self.printer.size = adafruit_thermal_printer.SIZE_SMALL
 		self.printer.justify = adafruit_thermal_printer.JUSTIFY_CENTER
+		self.printer.print('Casi The Friendly Cash Register!')
+		self.printer.feed(1)
+		self.printer.size = adafruit_thermal_printer.SIZE_LARGE
 		self.printer.inverse = True
 		self.printer.print(' VAL-U-MART ')
 		self.printer.inverse = False
@@ -51,14 +70,15 @@ class thermal_printer:
 		
 		self.printer.feed(1)
 		self.printer.print(time.strftime('%a %m/%d/%Y    %I:%M %p'))
-		
-		self.printer.feed(1)
 		self.printer.justify = adafruit_thermal_printer.JUSTIFY_LEFT
+		self.printer.feed(1)
+		self.printer.print('Cashier:')
+		self.printer.print('Casi The Friendly Cash Register')	
+		self.printer.feed(1)
 		self.printer.print('{0}{1:04d}'.format('Customer Number: ', customer_number))
 		
-		#printer.print('1234567890123456789012345678901234567890')
-		#printer.feed(4)
-		
+		self.printer.feed(1)
+		self.printer.size = adafruit_thermal_printer.SIZE_SMALL	
 		self.printer.feed(1)
 
 	
@@ -70,8 +90,12 @@ class thermal_printer:
 		self.printer.bold = False
 		self.printer.feed(1)
 		self.printer.size = adafruit_thermal_printer.SIZE_MEDIUM
-		self.printer.print('Thanks for shopping with us!')
-		self.printer.print('Come again soon!')
+		self.printer.print('Love from the Casi team!')
+		self.printer.size = adafruit_thermal_printer.SIZE_SMALL
+		self.printer.print('Roxie Black, David Kaplan')
+		self.printer.print('Alyssa Blake Nader & Dan Gerbang')
+		self.printer.feed(1)
+		self.printer.print('Contact us on Venmo @CasiCash')
 		self.printer.print_barcode('948372401763', self.printer.UPC_A)
 		self.printer.feed(5)
 
@@ -161,11 +185,13 @@ if __name__ == '__main__':
 	some_text = '''Hurray! Equality is here! Splitting financial costs equally makes total sense and is the best way to show that you care about equality. Don't patronize ppl with marginalized identities by picking up more of the costs of things; it makes them feel equal and important to privledged people to pay the same even though their ability to earn (and pay for) things is less due to their identity alone!'''
 
 	p = thermal_printer()
-	
-	#p.print_header()
+	p.print_header()
 	p.print_block(some_text)
-	p.print_item('love')
-	p.print_footer()
+	#p.print_item('love')
+	#p.print_block(some_text)
+	#p.print_item('love')
+	#p.print_block(some_text)
+	#p.print_footer()
 	p.printer.feed(8)
 	
 
